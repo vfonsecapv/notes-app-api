@@ -1,0 +1,73 @@
+service: notes-app-api
+
+plugins:
+  - serverless-webpack
+
+custom:
+  webpackIncludeModules: true
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: prod
+  region: us-east-1
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:us-east-1:*:*"
+
+functions:
+  create:
+    handler: create.main
+    events:
+      - http:
+          path: notes
+          method: post
+          cors: true
+          authorizer:
+            arn: arn:aws:cognito-idp:us-east-1:514404433551:userpool/us-east-1_5jI2CpVD4
+  get:
+    handler: get.main
+    events:
+      - http:
+          path: notes/{id}
+          method: get
+          cors: true
+          authorizer:
+            arn: arn:aws:cognito-idp:us-east-1:514404433551:userpool/us-east-1_5jI2CpVD4
+  list:
+    handler: list.main
+    events:
+      - http:
+          path: notes
+          method: get
+          cors: true
+          authorizer:
+            arn: arn:aws:cognito-idp:us-east-1:514404433551:userpool/us-east-1_5jI2CpVD4
+  update:
+    handler: update.main
+    events:
+      - http:
+          path: notes/{id}
+          method: put
+          cors: true
+          authorizer:
+            arn: arn:aws:cognito-idp:us-east-1:514404433551:userpool/us-east-1_5jI2CpVD4
+
+  delete:
+    handler: delete.main
+    events:
+      - http:
+          path: notes/{id}
+          method: delete
+          cors: true
+          authorizer:
+            arn: arn:aws:cognito-idp:us-east-1:514404433551:userpool/us-east-1_5jI2CpVD4
